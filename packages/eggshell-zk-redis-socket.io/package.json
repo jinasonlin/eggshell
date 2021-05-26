@@ -1,5 +1,5 @@
 {
-  "name": "eggshell-zk-socket.io-redis",
+  "name": "eggshell-zk-redis-socket.io",
   "description": "egg plugin",
   "version": "0.0.1",
   "eggPlugin": {
