@@ -1,7 +1,7 @@
 {
   "name": "eggshell-surface",
   "description": "egg framework",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "scripts": {
     "test": "npm run lint -- --fix && egg-bin pkgfiles && npm run test-local",
