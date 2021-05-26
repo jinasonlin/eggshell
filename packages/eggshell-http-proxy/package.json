@@ -1,0 +1,39 @@
+{
+  "name": "eggshell-http-proxy",
+  "description": "egg plugin",
+  "version": "0.0.0",
+  "eggPlugin": {
+    "name": "httpProxy"
+  },
+  "scripts": {
+    "test": "npm run lint -- --fix && egg-bin pkgfiles && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "lint": "eslint .",
+    "ci": "egg-bin pkgfiles --check && npm run lint && npm run cov",
+    "pkgfiles": "egg-bin pkgfiles",
+    "autod": "autod"
+  },
+  "dependencies": {
+    "http-proxy-middleware": "^2.0.0",
+    "koa-compose": "^4.1.0",
+    "koa-connect": "^2.1.0",
+    "opentracing": "^0.14.5"
+  },
+  "devDependencies": {
+    "autod": "^3.1.1",
+    "autod-egg": "^1.1.0",
+    "egg": "^2.29.4",
+    "egg-bin": "^4.16.2",
+    "egg-ci": "^1.18.0",
+    "egg-mock": "^3.21.0",
+    "eslint": "^7.27.0",
+    "eslint-config-egg": "^9.0.0"
+  },
+  "files": [
+    "app",
+    "lib",
+    "config",
+    "app.js"
+  ]
+}

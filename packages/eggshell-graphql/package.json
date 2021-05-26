@@ -1,0 +1,43 @@
+{
+  "name": "eggshell-graphql",
+  "description": "egg plugin",
+  "version": "0.0.1",
+  "eggPlugin": {
+    "name": "graphql"
+  },
+  "scripts": {
+    "test": "npm run lint -- --fix && egg-bin pkgfiles && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "lint": "eslint .",
+    "ci": "egg-bin pkgfiles --check && npm run lint && npm run cov",
+    "pkgfiles": "egg-bin pkgfiles",
+    "autod": "autod"
+  },
+  "dependencies": {
+    "apollo-server-koa": "^2.24.1",
+    "egg": "^2.29.4",
+    "graphql": "^15.5.0",
+    "graphql-scalars": "^1.9.3",
+    "graphql-tag": "^2.12.4",
+    "graphql-tools": "^7.0.5",
+    "koa-compose": "^4.1.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "autod": "^3.1.1",
+    "autod-egg": "^1.1.0",
+    "egg": "^2.29.4",
+    "egg-bin": "^4.16.2",
+    "egg-ci": "^1.18.0",
+    "egg-mock": "^3.21.0",
+    "eslint": "^7.27.0",
+    "eslint-config-egg": "^9.0.0"
+  },
+  "files": [
+    "app",
+    "lib",
+    "config",
+    "app.js"
+  ]
+}

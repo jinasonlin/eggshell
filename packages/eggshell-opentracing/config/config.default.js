@@ -1,0 +1,3 @@
+exports.opentracing = {
+  logAgentType: 'listen',
+};
