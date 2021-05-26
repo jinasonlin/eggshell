@@ -1,5 +1,5 @@
 {
-  "name": "eggshell-sso-helper",
+  "name": "eggshell-nsso-helper",
   "description": "egg plugin",
   "version": "0.0.1",
   "eggPlugin": {
