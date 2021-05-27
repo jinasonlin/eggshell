@@ -281,7 +281,10 @@ exports.keywords = (keywords, fields) => {
     value = keywords.value;
     all = !(keywords.all === 'false' || keywords.all === false);
   }
-  if (!value) return;
+  if (typeof value === 'string') {
+    value = value.trim();
+  }
+  if (!value || typeof value !== 'string') return;
 
   const words = value.split(/\s+/);
   const keywordsFilters = [];
