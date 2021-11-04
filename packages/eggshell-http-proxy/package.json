@@ -15,7 +15,7 @@
     "autod": "autod"
   },
   "dependencies": {
-    "http-proxy-middleware": "^2.0.0",
+    "http-proxy-middleware": "^0.21.0",
     "koa-compose": "^4.1.0",
     "koa-connect": "^2.1.0",
     "opentracing": "^0.14.5"
