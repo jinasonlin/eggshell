@@ -1,7 +1,7 @@
 {
   "name": "eggshell-opentracing-jaeger",
   "description": "egg pluginegg",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha.0",
   "eggPlugin": {
     "name": "opentracingJaeger",
     "dependencies": [
