@@ -3,7 +3,7 @@ module.exports = {
     return this.request.boomHost;
   },
   get user() {
-    return this.session.user || this.session.user;
+    return this.request.user || this.session.user;
   },
   get userId() {
     return this.user && this.user._id;
