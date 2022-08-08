@@ -1,0 +1,45 @@
+{
+  "name": "eggshell-opentracing-opentelemetry",
+  "description": "egg pluginegg",
+  "version": "0.0.1-alpha.0",
+  "eggPlugin": {
+    "name": "opentracingOpentelemetry",
+    "dependencies": [
+      "opentracing"
+    ]
+  },
+  "scripts": {
+    "test": "npm run lint -- --fix && egg-bin pkgfiles && npm run test-local",
+    "test-local": "egg-bin test",
+    "cov": "egg-bin cov",
+    "lint": "eslint .",
+    "ci": "egg-bin pkgfiles --check && npm run lint && npm run cov",
+    "pkgfiles": "egg-bin pkgfiles",
+    "autod": "autod"
+  },
+  "dependencies": {
+    "@opentelemetry/core": "^1.5.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.31.0",
+    "@opentelemetry/resources": "^1.5.0",
+    "@opentelemetry/sdk-trace-base": "^1.5.0",
+    "@opentelemetry/sdk-trace-node": "^1.5.0",
+    "@opentelemetry/semantic-conventions": "^1.5.0",
+    "@opentelemetry/shim-opentracing": "^1.5.0",
+    "opentracing": "^0.14.5"
+  },
+  "devDependencies": {
+    "autod": "^3.1.1",
+    "autod-egg": "^1.1.0",
+    "egg": "^2.29.4",
+    "egg-bin": "^4.16.2",
+    "egg-ci": "^1.18.0",
+    "egg-mock": "^3.21.0",
+    "eslint": "^7.27.0",
+    "eslint-config-egg": "^9.0.0"
+  },
+  "files": [
+    "config",
+    "app.js",
+    "lib"
+  ]
+}
