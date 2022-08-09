@@ -5,6 +5,7 @@ const { ParentBasedSampler, TraceIdRatioBasedSampler } = require('@opentelemetry
 const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
 const { SimpleSpanProcessor, BatchSpanProcessor, ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-base');
 const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
+const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
 const { TracerShim } = require('@opentelemetry/shim-opentracing');
 const { tracerName, traceUrl } = require('./constant');
 
@@ -14,12 +15,16 @@ module.exports = (app) => {
   const {
     env,
     opentracingOpentelemetry: {
+      debug,
+      simulate,
       serviceName,
       serviceId,
       companyName,
       samplerRatio,
     },
   } = app.config;
+
+  debug && diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
 
   const provider = new NodeTracerProvider({
     resource: new Resource({
@@ -33,12 +38,12 @@ module.exports = (app) => {
     }),
   });
 
-  if (env === 'local') {
-    provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
-  }
-  provider.addSpanProcessor(new BatchSpanProcessor(new OTLPTraceExporter({
-    url: traceUrl[env],
-  })));
+  provider.addSpanProcessor(simulate
+    ? new SimpleSpanProcessor(new ConsoleSpanExporter())
+    : new BatchSpanProcessor(new OTLPTraceExporter({
+      url: traceUrl[env],
+    })));
+
   provider.register();
 
   const tracer = new TracerShim(provider.getTracer(tracerName));

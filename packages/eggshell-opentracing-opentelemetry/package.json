@@ -18,9 +18,12 @@
     "autod": "autod"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.1.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.31.0",
     "@opentelemetry/core": "^1.5.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.31.0",
     "@opentelemetry/resources": "^1.5.0",
+    "@opentelemetry/sdk-node": "^0.31.0",
     "@opentelemetry/sdk-trace-base": "^1.5.0",
     "@opentelemetry/sdk-trace-node": "^1.5.0",
     "@opentelemetry/semantic-conventions": "^1.5.0",
@@ -40,6 +43,7 @@
   "files": [
     "config",
     "app.js",
-    "lib"
+    "lib",
+    "index.js"
   ]
 }
