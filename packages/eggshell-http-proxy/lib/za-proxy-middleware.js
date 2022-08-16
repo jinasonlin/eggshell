@@ -16,9 +16,10 @@ const {
   ERROR,
 } = Tags;
 
+const HTTP_SERVER_SPAN = Symbol.for('Request#httpServerSpan');
 const PROXY_SPAN = Symbol.for('proxy#span');
 
-module.exports = (proxy, { tracer, HTTP_SERVER_SPAN } = {}) => {
+module.exports = (proxy, { tracer } = {}) => {
   const proxyMiddlewares = [];
   // Avoid 'proxy' declaration with const
   let _proxy = proxy;
@@ -70,7 +71,7 @@ module.exports = (proxy, { tracer, HTTP_SERVER_SPAN } = {}) => {
 
         // eslint-disable-next-line
         proxyConfig.onProxyReq = (proxyReq, req, res) => {
-          const parentSpanContext = HTTP_SERVER_SPAN && req[HTTP_SERVER_SPAN]
+          const parentSpanContext = req[HTTP_SERVER_SPAN]
             ? req[HTTP_SERVER_SPAN]
             : tracer.extract(FORMAT_HTTP_HEADERS, req.headers);
           const spanOptions = {};
@@ -94,6 +95,8 @@ module.exports = (proxy, { tracer, HTTP_SERVER_SPAN } = {}) => {
         // eslint-disable-next-line
         proxyConfig.onProxyRes = (proxyRes, req, res) => {
           const span = req[PROXY_SPAN];
+          if (!span) return;
+
           const socket = proxyRes.socket || proxyRes.connection;
 
           span.setTag(PEER_PORT, socket.remotePort);
@@ -110,17 +113,16 @@ module.exports = (proxy, { tracer, HTTP_SERVER_SPAN } = {}) => {
         // eslint-disable-next-line
         proxyConfig.onError = (error, req, res) => {
           const span = req[PROXY_SPAN];
+          if (!span) return;
 
-          if (span) {
-            span.setTag(ERROR, true);
-            span.log({
-              event: ERROR,
-              'error.object': error,
-              'error.kind': error.name,
-              message: error.message,
-              stack: error.stack,
-            });
-          }
+          span.setTag(ERROR, true);
+          span.log({
+            event: ERROR,
+            'error.object': error,
+            'error.kind': error.name,
+            message: error.message,
+            stack: error.stack,
+          });
         };
       });
     }
