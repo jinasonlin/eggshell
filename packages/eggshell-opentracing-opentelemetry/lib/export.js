@@ -10,8 +10,8 @@ const { traceUrl } = require('./constant');
 const { opentracingOpentelemetry } = require('../config/config.default');
 
 module.exports = (config = opentracingOpentelemetry) => {
-  const env = process.env.EGG_SERVER_ENV || process.env.DEPLOY_ENV || 'local';
   const {
+    env: _env,
     debug,
     simulate,
     serviceName,
@@ -22,6 +22,7 @@ module.exports = (config = opentracingOpentelemetry) => {
     ...opentracingOpentelemetry,
     ...config,
   };
+  const env = _env || process.env.EGG_SERVER_ENV || process.env.DEPLOY_ENV || 'local';
 
   debug && console.debug('opentelemetry config:', env, { ...opentracingOpentelemetry, ...config })
   debug && diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);

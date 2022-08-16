@@ -65,8 +65,12 @@ module.exports = (app) => {
       return this[ROOTSPAN] && this[ROOTSPAN].context().parentId;
     }
 
-    startSpan(...args) {
-      const span = tracer.startSpan(...args);
+    startSpan(name, options) {
+      if (this[ROOTSPAN]) {
+        options = { childOf: this[ROOTSPAN], ...options };
+      }
+
+      const span = tracer.startSpan(name, options);
 
       // set root span
       if (!this[ROOTSPAN]) this[ROOTSPAN] = span;

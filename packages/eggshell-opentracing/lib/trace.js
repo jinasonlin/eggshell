@@ -1,4 +1,5 @@
 const { FORMAT_HTTP_HEADERS, Tags } = require('opentracing');
+const pathMatching = require('egg-path-matching');
 
 const HTTP_SERVER_SPAN = Symbol.for('Request#httpServerSpan');
 const HTTP_CLIENT_SPAN = Symbol.for('Request#httpClientSpan');
@@ -63,6 +64,8 @@ exports.logMiddleware = () => async (/** @type {Egg.Context} */ ctx, next) => {
 
 exports.logHTTPServer = (/** @type {Egg.Application} */ app) => {
   app.on('request', (/** @type {Egg.Context} */ ctx) => {
+    const match = pathMatching(app.config.opentracing);
+    if (!match(ctx)) return;
     const spanContext = ctx.tracer.extract(FORMAT_HTTP_HEADERS, ctx.header);
     const span = ctx.tracer.startSpan('http_server', { childOf: spanContext });
     span.setTag(SPAN_KIND, SPAN_KIND_RPC_SERVER);
@@ -70,6 +73,7 @@ exports.logHTTPServer = (/** @type {Egg.Application} */ app) => {
   });
   app.on('response', (ctx) => {
     const span = ctx.req[HTTP_SERVER_SPAN];
+    if (!span) return;
     const socket = ctx.req.socket || ctx.req.connection;
     // TODO: what's the service name of the remote server
     // span.setTag(PEER_SERVICE);
@@ -81,7 +85,8 @@ exports.logHTTPServer = (/** @type {Egg.Application} */ app) => {
     } else if (socket.remoteFamily === 'IPv6') {
       span.setTag(PEER_HOST_IPV6, socket.remoteAddress);
     }
-    span.setTag(HTTP_URL, ctx.url);
+    span.setTag(HTTP_URL, ctx.originalUrl);
+    // span.setTag(HTTP_URL, ctx.url);
     span.setTag(HTTP_METHOD, ctx.method);
     span.setTag(HTTP_STATUS_CODE, ctx.realStatus);
     span.setTag('http.request_size', ctx.get('content-length') || 0);
@@ -91,16 +96,15 @@ exports.logHTTPServer = (/** @type {Egg.Application} */ app) => {
   app.on('error', (error, ctx) => {
     ctx = ctx || app.createAnonymousContext();
     const span = ctx.req[HTTP_SERVER_SPAN];
-    if (span) {
-      span.setTag(ERROR, true);
-      span.log({
-        event: ERROR,
-        'error.object': error,
-        'error.kind': error.name,
-        message: error.message,
-        stack: error.stack,
-      });
-    }
+    if (!span) return;
+    span.setTag(ERROR, true);
+    span.log({
+      event: ERROR,
+      'error.object': error,
+      'error.kind': error.name,
+      message: error.message,
+      stack: error.stack,
+    });
   });
 };
 
