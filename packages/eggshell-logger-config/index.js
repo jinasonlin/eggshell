@@ -26,9 +26,9 @@ module.exports = (appInfo) => {
     dir: process.env.DEPLOY_ENV
       ? path.join('/', 'alidata1', 'admin', appName, 'logs')
       : path.join(appInfo.baseDir, 'logs'),
-    appLogName: `app-web_app_${appName}_lt_all.log`,
-    coreLogName: `app-core_app_${appName}_lt_all.log`,
-    agentLogName: `agent_app_${appName}_lt_all.log`,
+    appLogName: `app-web_app_${appName}_lt_info.log`,
+    coreLogName: `app-core_app_${appName}_lt_info.log`,
+    agentLogName: `agent_app_${appName}_lt_info.log`,
     errorLogName: `common_app_${appName}_lt_error.log`,
     level: 'INFO',
     consoleLevel: 'INFO',
@@ -54,7 +54,7 @@ module.exports = (appInfo) => {
   config.customLogger = {
     scheduleLogger: {
       consoleLevel: 'NONE',
-      file: `schedule_app_${appName}_lt_all.log`,
+      file: `schedule_app_${appName}_lt_info.log`,
     },
     bizLogger: {
       consoleLevel: 'NONE',
