@@ -23,7 +23,7 @@ module.exports = (app) => {
     }
 
     get traceId() {
-      return this[ROOTSPAN] && this[ROOTSPAN].context().traceIdStr || this[ROOTSPAN].context().spanIdStr;
+      return this[ROOTSPAN] && (this[ROOTSPAN].context().traceIdStr || this[ROOTSPAN].context().spanIdStr);
     }
 
     get spanId() {
