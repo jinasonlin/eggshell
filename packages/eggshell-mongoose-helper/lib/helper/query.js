@@ -44,7 +44,7 @@ const filterHelp = {
     if (value) {
       result = {};
       let operator;
-      if (Array.isArray(filter)) {
+      if (Array.isArray(value)) {
         operator = all ? '$all' : '$in';
         operator = inverse ? '$nin' : operator;
         result[operator] = value;
