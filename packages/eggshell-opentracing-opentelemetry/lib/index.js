@@ -1,4 +1,4 @@
-const { Tracer } = require('opentracing');
+const { Tracer, FORMAT_HTTP_HEADERS } = require('opentracing');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
 const { Resource } = require('@opentelemetry/resources');
 const { ParentBasedSampler, TraceIdRatioBasedSampler } = require('@opentelemetry/core');
@@ -7,6 +7,7 @@ const { SimpleSpanProcessor, BatchSpanProcessor, ConsoleSpanExporter } = require
 const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
 const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
 const { TracerShim } = require('@opentelemetry/shim-opentracing');
+const { B3Propagator } = require('@opentelemetry/propagator-b3');
 const { tracerName, traceUrl } = require('./constant');
 
 const ROOTSPAN = Symbol('Opentracing#rootSpan');
@@ -46,7 +47,11 @@ module.exports = (app) => {
 
   provider.register();
 
-  const tracer = new TracerShim(provider.getTracer(tracerName));
+  const b3Propagator = new B3Propagator();
+  const tracer = new TracerShim(provider.getTracer(tracerName), {
+    textMapPropagator: b3Propagator,
+    httpHeadersPropagator: b3Propagator,
+  });
 
   class TracerDelegate extends Tracer {
     get tracer() {
@@ -54,15 +59,15 @@ module.exports = (app) => {
     }
 
     get traceId() {
-      return this[ROOTSPAN] && this[ROOTSPAN].context().traceId;
+      return this[ROOTSPAN] && this[ROOTSPAN].context().toTraceId();
     }
 
     get spanId() {
-      return this[ROOTSPAN] && this[ROOTSPAN].context().spanId;
+      return this[ROOTSPAN] && this[ROOTSPAN].context().toSpanId();
     }
 
     get parentId() {
-      return this[ROOTSPAN] && this[ROOTSPAN].context().parentId;
+      return this[ROOTSPAN] && this[ROOTSPAN].getSpan().parentSpanId;
     }
 
     startSpan(name, options) {
