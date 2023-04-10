@@ -1,11 +1,17 @@
 const { Tracer, FORMAT_HTTP_HEADERS } = require('opentracing');
 const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
 const { Resource } = require('@opentelemetry/resources');
-const { ParentBasedSampler, TraceIdRatioBasedSampler } = require('@opentelemetry/core');
+const {
+  ParentBasedSampler,
+  TraceIdRatioBasedSampler,
+  CompositePropagator,
+  W3CBaggagePropagator,
+  W3CTraceContextPropagator,
+} = require('@opentelemetry/core');
 const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
 const { SimpleSpanProcessor, BatchSpanProcessor, ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-base');
 const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
-const { diag, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
+const { diag, propagation, DiagConsoleLogger, DiagLogLevel } = require('@opentelemetry/api');
 const { TracerShim } = require('@opentelemetry/shim-opentracing');
 const { B3Propagator } = require('@opentelemetry/propagator-b3');
 const { tracerName, traceUrl } = require('./constant');
@@ -22,10 +28,17 @@ module.exports = (app) => {
       serviceId,
       companyName,
       samplerRatio,
+      propagators,
     },
   } = app.config;
 
   debug && diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+
+  const compositePropagator = new CompositePropagator({
+    propagators: [new W3CTraceContextPropagator(), new W3CBaggagePropagator()],
+  });
+
+  propagation.setGlobalPropagator(compositePropagator);
 
   const provider = new NodeTracerProvider({
     resource: new Resource({
@@ -47,11 +60,15 @@ module.exports = (app) => {
 
   provider.register();
 
-  const b3Propagator = new B3Propagator();
-  const tracer = new TracerShim(provider.getTracer(tracerName), {
-    textMapPropagator: b3Propagator,
-    httpHeadersPropagator: b3Propagator,
-  });
+  let _propagators;
+  if (propagators === 'b3') {
+    const b3Propagator = new B3Propagator();
+    _propagators = {
+      textMapPropagator: b3Propagator,
+      httpHeadersPropagator: b3Propagator,
+    }
+  }
+  const tracer = new TracerShim(provider.getTracer(tracerName), _propagators);
 
   class TracerDelegate extends Tracer {
     get tracer() {
